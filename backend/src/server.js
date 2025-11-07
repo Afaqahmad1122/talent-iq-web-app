@@ -25,7 +25,7 @@ app.use(express.static(path.join(rootDir, "frontend/dist")));
 
 // API routes should be before catch-all
 // Catch-all handler: send back React app's index.html for SPA routing
-app.get("*", (req, res) => {
+app.get("{*splat}", (req, res) => {
   res.sendFile(path.join(rootDir, "frontend/dist/index.html"));
 });
 
