@@ -3,6 +3,9 @@ import { ENV } from "./lib/env.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./lib/db.js";
+import cors from "cors";
+import { inngest, syncUser, deleteUser } from "./lib/inngest.js";
+import { serve } from "inngest/express";
 
 const app = express();
 
@@ -12,6 +15,24 @@ const PORT = ENV.PORT;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "../..");
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: ENV.CLIENT_URL,
+    credentials: true,
+  })
+);
+
+app.use(
+  "/api/inngest",
+  serve({
+    client: inngest,
+    functions: [syncUser, deleteUser],
+  })
+);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ message: "Server is running" });

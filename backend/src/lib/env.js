@@ -13,4 +13,9 @@ export const ENV = {
   PORT: process.env.PORT || 8080,
   DB_URL: process.env.MONGO_URI,
   NODE_ENV: process.env.NODE_ENV || "production",
+  CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
+  INNJEST_EVENT_KEY: process.env.INNJEST_EVENT_KEY,
+  INNJEST_SIGNING_KEY: process.env.INNJEST_SIGNING_KEY,
+  STREAM_API_KEY: process.env.STREAM_API_KEY,
+  STREAM_API_SECRET: process.env.STREAM_API_SECRET,
 };
