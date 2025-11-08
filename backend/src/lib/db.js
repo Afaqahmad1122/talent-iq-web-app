@@ -17,13 +17,10 @@ export const connectDB = async () => {
     if (isAtlasCheck) {
       // Use Google DNS for Atlas connections
       dns.setServers(["8.8.8.8", "8.8.4.4"]);
-      console.log("🔧 Using Google DNS (8.8.8.8, 8.8.4.4) for DNS resolution");
     }
 
     // Log connection string (without password for security)
     const dbUrlForLog = ENV.DB_URL.replace(/:[^:@]+@/, ":****@");
-    console.log("🔄 Attempting to connect to database...");
-    console.log("📍 Connection string:", dbUrlForLog);
 
     // Listen to connection events BEFORE connecting
     mongoose.connection.on("error", (err) => {
@@ -31,11 +28,11 @@ export const connectDB = async () => {
     });
 
     mongoose.connection.on("disconnected", () => {
-      console.warn("⚠️  Database disconnected");
+      // Database disconnected
     });
 
     mongoose.connection.on("connected", () => {
-      console.log("✅ Mongoose connected to MongoDB");
+      // Mongoose connected
     });
 
     // Check if connection string uses mongodb:// instead of mongodb+srv://
@@ -43,9 +40,7 @@ export const connectDB = async () => {
       ENV.DB_URL.startsWith("mongodb://") &&
       ENV.DB_URL.includes("mongodb.net")
     ) {
-      console.warn(
-        "⚠️  Warning: Using mongodb:// format. Consider using mongodb+srv:// for Atlas"
-      );
+      // Warning: Using mongodb:// format. Consider using mongodb+srv:// for Atlas
     }
 
     // Detect if connecting to Atlas (mongodb+srv:// or mongodb.net)
@@ -54,14 +49,11 @@ export const connectDB = async () => {
       ENV.DB_URL.startsWith("mongodb+srv://");
 
     if (isAtlas) {
-      console.log("🌐 Connecting to MongoDB Atlas...");
       // Validate connection string format for Atlas
       if (!ENV.DB_URL.startsWith("mongodb+srv://")) {
         console.error("❌ Atlas requires mongodb+srv:// format");
         throw new Error("Invalid connection string format for Atlas");
       }
-    } else {
-      console.log("💻 Connecting to local MongoDB...");
     }
 
     // Connection options - different for Atlas vs Local
@@ -93,7 +85,6 @@ export const connectDB = async () => {
     for (let i = 0; i < retries; i++) {
       try {
         if (i > 0) {
-          console.log(`🔄 Retry attempt ${i + 1}/${retries}...`);
           await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
         }
         await mongoose.connect(ENV.DB_URL, connectionOptions);
@@ -106,11 +97,6 @@ export const connectDB = async () => {
     console.log("✅ Database connected successfully");
   } catch (error) {
     console.error("❌ Database connection failed:", error.message);
-    console.error("📋 Error details:", {
-      name: error.name,
-      code: error.code,
-      reason: error.reason?.message || error.reason,
-    });
     throw error;
   }
 };
