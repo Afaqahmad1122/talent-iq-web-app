@@ -2,6 +2,7 @@ import express from "express";
 import { ENV } from "./lib/env.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { connectDB } from "./lib/db.js";
 
 const app = express();
 
@@ -29,6 +30,23 @@ app.get("{*splat}", (req, res) => {
   res.sendFile(path.join(rootDir, "frontend/dist/index.html"));
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Start server and connect to database
+const startServer = async () => {
+  // Start server first (don't wait for DB)
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+
+  // Try to connect to database (non-blocking)
+  try {
+    console.log("🔄 Starting database connection...");
+    await connectDB();
+    console.log("✅ Database connection established");
+  } catch (error) {
+    console.warn("⚠️  Server started but database connection failed");
+    console.warn("   Server will continue running without database");
+    console.warn("   Error details:", error.message);
+  }
+};
+
+startServer();
